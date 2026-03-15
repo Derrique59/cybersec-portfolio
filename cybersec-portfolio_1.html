@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKANKWASA DERRICK — Senior Security Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020408;
+    --bg2: #060d14;
+    --surface: #0a1628;
+    --accent: #00ffe0;
+    --accent2: #ff2d55;
+    --accent3: #7b61ff;
+    --text: #c8d8e8;
+    --text-dim: #4a6680;
+    --border: rgba(0,255,224,0.15);
+    --glow: 0 0 20px rgba(0,255,224,0.3);
+    --nav-bg: rgba(2,4,8,0.98);
+    --grid-color: rgba(0,255,224,0.03);
+    --scanline: rgba(0,0,0,0.08);
+  }
+
+  body.light-mode {
+    --bg: #eef2f7;
+    --bg2: #dde5f0;
+    --surface: #f8fafc;
+    --accent: #0057a8;
+    --accent2: #c8001e;
+    --accent3: #4a2fb5;
+    --text: #0d1f30;
+    --text-dim: #3d5a72;
+    --border: rgba(0,87,168,0.25);
+    --glow: 0 2px 16px rgba(0,87,168,0.18);
+    --nav-bg: rgba(238,242,247,0.98);
+    --grid-color: rgba(0,87,168,0.06);
+    --scanline: rgba(0,0,0,0.015);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 400;
+    overflow-x: hidden;
+    cursor: none;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.2s, height 0.2s, background 0.4s;
+    box-shadow: 0 0 10px var(--accent), 0 0 30px rgba(0,255,224,0.4);
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.3s, height 0.3s, border-color 0.4s;
+    opacity: 0.6;
+  }
+
+  /* Scan line overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      var(--scanline) 2px,
+      var(--scanline) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+    transition: background 0.4s ease;
+  }
+
+  /* Grid background */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+    transition: background 0.4s ease;
+  }
+
+  /* THEME TOGGLE */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.9rem 0.4rem 0.5rem;
+    cursor: pointer;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    transition: border-color 0.2s, background 0.4s ease;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+
+  .toggle-track {
+    width: 32px; height: 17px;
+    background: var(--surface);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    position: relative;
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  .toggle-thumb {
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 11px; height: 11px;
+    background: var(--accent);
+    border-radius: 50%;
+    transition: transform 0.3s, background 0.3s;
+    box-shadow: 0 0 6px var(--accent);
+  }
+  body.light-mode .toggle-thumb { transform: translateX(15px); }
+
+  .toggle-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+    transition: transform 0.4s ease;
+  }
+  body.light-mode .toggle-icon { transform: rotate(180deg); }
+
+  .toggle-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+  .theme-toggle:hover .toggle-label { color: var(--accent); }
+
+  /* Light mode card depth & overrides */
+  body.light-mode .skill-card,
+  body.light-mode .project-card,
+  body.light-mode .cert-card {
+    background: #ffffff;
+    box-shadow: 0 2px 12px rgba(0,50,100,0.08), 0 1px 3px rgba(0,50,100,0.06);
+  }
+  body.light-mode .skill-card:hover,
+  body.light-mode .project-card:hover {
+    box-shadow: 0 6px 24px rgba(0,87,168,0.15), 0 2px 6px rgba(0,87,168,0.1);
+  }
+  body.light-mode .nav-status { color: #007a3d; }
+  body.light-mode .status-dot { background: #007a3d; }
+  body.light-mode .contact-email { text-shadow: none; }
+  body.light-mode .project-status { color: #007a3d; border-color: rgba(0,122,61,0.35); }
+  body.light-mode .timeline::before { background: linear-gradient(180deg, var(--accent), transparent); opacity: 0.4; }
+  body.light-mode .timeline-item::before { box-shadow: 0 0 8px var(--accent); }
+  body.light-mode #matrix-canvas { opacity: 0.012; filter: hue-rotate(200deg) saturate(0.5); }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: linear-gradient(180deg, var(--nav-bg) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    transition: background 0.4s ease, border-color 0.4s ease;
+  }
+
+  .nav-logo {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-shadow: var(--glow);
+  }
+
+  .nav-logo span { color: var(--accent2); }
+
+  nav ul { display: flex; gap: 2.5rem; list-style: none; }
+  nav a {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: color 0.2s, text-shadow 0.2s;
+    position: relative;
+  }
+  nav a::before {
+    content: '//';
+    margin-right: 0.4em;
+    color: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  nav a:hover { color: var(--accent); }
+  nav a:hover::before { opacity: 1; }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: #00ff88;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    background: #00ff88;
+    border-radius: 50%;
+    animation: blink 1.4s ease infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  /* HERO */
+  #hero {
+    position: relative;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 8rem 3rem 4rem;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .hero-bg-globe {
+    position: absolute;
+    top: 50%; left: 60%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    box-shadow: var(--glow);
+    animation: rotate 30s linear infinite;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .hero-bg-globe::before {
+    content: '';
+    position: absolute;
+    inset: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    opacity: 0.6;
+  }
+  .hero-bg-globe::after {
+    content: '';
+    position: absolute;
+    inset: 60px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    opacity: 0.4;
+  }
+  @keyframes rotate { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  .hero-content { position: relative; max-width: 700px; }
+
+  .hero-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.3s forwards;
+  }
+  .hero-label::before { content: '> '; }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.5s forwards;
+    transition: color 0.4s ease;
+  }
+
+  h1 .line2 {
+    display: block;
+    color: var(--accent);
+    text-shadow: var(--glow);
+  }
+
+  .hero-role {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.7s forwards;
+  }
+  .hero-role .bracket { color: var(--accent2); }
+
+  .hero-bio {
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--text-dim);
+    max-width: 540px;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.9s forwards;
+    border-left: 2px solid var(--accent);
+    padding-left: 1.5rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 1.1s forwards;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 2rem;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glow);
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 2rem;
+    background: transparent;
+    color: var(--accent);
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--accent);
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: background 0.2s, color 0.2s, border-color 0.4s;
+  }
+  .btn-outline:hover { background: rgba(0,87,168,0.1); }
+
+  .hero-stats {
+    position: absolute;
+    right: 0; top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    opacity: 0;
+    animation: fadeLeft 0.7s ease 1.3s forwards;
+  }
+
+  .stat-item { text-align: right; }
+  .stat-number {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    display: block;
+  }
+  .stat-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeLeft {
+    from { opacity: 0; transform: translate(20px, -50%); }
+    to { opacity: 1; transform: translate(0, -50%); }
+  }
+
+  /* SECTION STYLES */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 6rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .section-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent2);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 900;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    transition: color 0.4s ease;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0.3;
+  }
+
+  /* SKILLS */
+  #skills { background: none; }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s, background 0.4s ease, box-shadow 0.3s;
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,255,224,0.05) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .skill-card:hover { border-color: rgba(0,255,224,0.4); transform: translateY(-4px); }
+  .skill-card:hover::before { opacity: 1; }
+
+  .skill-icon {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .skill-name {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .skill-desc {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 1.2rem;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--accent);
+    border: 1px solid rgba(0,255,224,0.2);
+    padding: 0.2rem 0.6rem;
+    letter-spacing: 0.1em;
+    background: rgba(0,255,224,0.05);
+  }
+
+  .tag.red { color: var(--accent2); border-color: rgba(255,45,85,0.2); background: rgba(255,45,85,0.05); }
+  .tag.purple { color: var(--accent3); border-color: rgba(123,97,255,0.2); background: rgba(123,97,255,0.05); }
+
+  /* EXPERIENCE */
+  .timeline { position: relative; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(180deg, var(--accent), transparent);
+    opacity: 0.3;
+  }
+
+  .timeline-item {
+    padding-left: 3rem;
+    padding-bottom: 3.5rem;
+    position: relative;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -4px; top: 6px;
+    width: 9px; height: 9px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  .timeline-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .timeline-date {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent2);
+    letter-spacing: 0.2em;
+  }
+
+  .timeline-company {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  .timeline-role {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.05em;
+    transition: color 0.4s ease;
+  }
+
+  .timeline-desc {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    font-weight: 300;
+    max-width: 640px;
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s, background 0.4s ease, box-shadow 0.3s;
+    position: relative;
+  }
+  .project-card:hover { transform: translateY(-6px); border-color: rgba(0,255,224,0.35); }
+
+  .project-header {
+    padding: 1.5rem 2rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .project-type {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .project-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.06em;
+    transition: color 0.4s ease;
+  }
+
+  .project-status {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: #00ff88;
+    border: 1px solid rgba(0,255,136,0.3);
+    padding: 0.2rem 0.6rem;
+    letter-spacing: 0.1em;
+  }
+
+  .project-body { padding: 1.5rem 2rem; }
+
+  .project-desc {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+  }
+
+  /* CERTS */
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .cert-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    transition: border-color 0.3s, background 0.4s ease;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+  .cert-card:hover { border-color: rgba(0,255,224,0.4); }
+
+  .cert-badge {
+    width: 44px; height: 44px;
+    background: rgba(0,255,224,0.1);
+    border: 1px solid rgba(0,255,224,0.2);
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .cert-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+  }
+
+  .cert-issuer {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  /* CONTACT */
+  #contact { text-align: center; }
+
+  .contact-wrapper {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .contact-intro {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    font-weight: 300;
+    margin-bottom: 3rem;
+  }
+
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 4rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 1rem 1.8rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    transition: border-color 0.2s, color 0.2s, background 0.4s ease;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .contact-link:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,255,224,0.05);
+  }
+
+  .contact-email {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    text-shadow: var(--glow);
+    letter-spacing: 0.08em;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+  }
+
+  .footer-copy {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+  }
+
+  .footer-note {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+  }
+  .footer-note span { color: var(--accent2); }
+
+  /* MATRIX RAIN */
+  #matrix-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.035;
+  }
+
+  /* DIVIDER */
+  .divider {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.15;
+    margin: 0;
+  }
+
+  /* terminal blink */
+  .blink {
+    animation: tblink 1s step-end infinite;
+  }
+  @keyframes tblink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* Scroll animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* IMAGERY STYLES */
+  .hero-avatar {
+    position: absolute;
+    right: 6%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 320px;
+    height: 320px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1.4s forwards;
+    z-index: 2;
+  }
+  .hero-avatar svg { width: 100%; height: 100%; }
+
+  .section-illustration {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 3rem;
+    display: block;
+    opacity: 0.85;
+  }
+
+  .skill-card .skill-svg {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .threat-map-wrap {
+    margin: 0 auto 4rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s ease, border-color 0.4s ease;
+  }
+  .threat-map-wrap::before {
+    content: 'LIVE THREAT MAP — EAST AFRICA REGION';
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    display: block;
+    margin-bottom: 1rem;
+    opacity: 0.7;
+  }
+
+  .cert-logo-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+  }
+  .cert-logo-badge {
+    width: 64px; height: 64px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 8px;
+    transition: border-color 0.3s, transform 0.2s, background 0.4s ease;
+  }
+  .cert-logo-badge:hover { border-color: var(--accent); transform: translateY(-3px); }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { gap: 1.2rem; }
+    section { padding: 4rem 1.5rem; }
+    .hero-stats { display: none; }
+    h1 { font-size: 2.4rem; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">D<span>.</span>AKANKWASA</div>
+  <ul>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#certifications">Certs</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      AVAILABLE FOR HIRE
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light mode">
+      <span class="toggle-icon">🌙</span>
+      <div class="toggle-track"><div class="toggle-thumb"></div></div>
+      <span class="toggle-label" id="toggleLabel">DARK</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-globe"></div>
+
+  <!-- Hero SVG Illustration -->
+  <div class="hero-avatar">
+    <svg viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="var(--accent3)" stop-opacity="0.7"/>
+        </linearGradient>
+        <linearGradient id="shieldFill" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="var(--surface)" stop-opacity="0.95"/>
+          <stop offset="100%" stop-color="var(--bg2)" stop-opacity="0.95"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Outer glow circle -->
+      <circle cx="160" cy="160" r="148" fill="url(#glowGrad)"/>
+
+      <!-- Rotating orbit rings -->
+      <circle cx="160" cy="160" r="145" stroke="var(--accent)" stroke-width="0.5" stroke-opacity="0.2" stroke-dasharray="4 8"/>
+      <circle cx="160" cy="160" r="120" stroke="var(--accent)" stroke-width="0.5" stroke-opacity="0.15" stroke-dasharray="2 6"/>
+
+      <!-- Orbit dots -->
+      <circle cx="305" cy="160" r="4" fill="var(--accent)" opacity="0.7">
+        <animateTransform attributeName="transform" type="rotate" from="0 160 160" to="360 160 160" dur="8s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="160" cy="15" r="3" fill="var(--accent2)" opacity="0.6">
+        <animateTransform attributeName="transform" type="rotate" from="0 160 160" to="-360 160 160" dur="12s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="40" cy="160" r="2.5" fill="var(--accent3)" opacity="0.8">
+        <animateTransform attributeName="transform" type="rotate" from="120 160 160" to="480 160 160" dur="6s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- Central shield shape -->
+      <path d="M160 52 L220 80 L220 152 C220 192 160 228 160 228 C160 228 100 192 100 152 L100 80 Z"
+            fill="url(#shieldFill)" stroke="url(#shieldGrad)" stroke-width="2"/>
+
+      <!-- Shield inner detail lines -->
+      <path d="M160 70 L210 94 L210 152 C210 185 160 215 160 215 C160 215 110 185 110 152 L110 94 Z"
+            fill="none" stroke="var(--accent)" stroke-width="0.8" stroke-opacity="0.3"/>
+
+      <!-- Lock icon inside shield -->
+      <rect x="143" y="138" width="34" height="28" rx="3" fill="none" stroke="var(--accent)" stroke-width="2"/>
+      <path d="M150 138 L150 130 C150 122 170 122 170 130 L170 138" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="160" cy="152" r="4" fill="var(--accent)"/>
+      <line x1="160" y1="156" x2="160" y2="162" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+
+      <!-- Circuit lines emanating from shield -->
+      <g stroke="var(--accent)" stroke-width="1" stroke-opacity="0.4">
+        <path d="M100 120 L60 120 L60 90 L30 90"/>
+        <circle cx="30" cy="90" r="3" fill="var(--accent)" fill-opacity="0.6"/>
+        <path d="M220 120 L260 120 L260 100 L290 100"/>
+        <circle cx="290" cy="100" r="3" fill="var(--accent)" fill-opacity="0.6"/>
+        <path d="M130 228 L130 260 L100 260"/>
+        <circle cx="100" cy="260" r="3" fill="var(--accent2)" fill-opacity="0.6"/>
+        <path d="M190 225 L190 255 L220 255 L220 275"/>
+        <circle cx="220" cy="275" r="3" fill="var(--accent3)" fill-opacity="0.6"/>
+        <path d="M100 160 L70 160 L70 195"/>
+        <circle cx="70" cy="195" r="3" fill="var(--accent)" fill-opacity="0.5"/>
+      </g>
+
+      <!-- Small node dots at circuit ends -->
+      <circle cx="30" cy="90" r="6" fill="none" stroke="var(--accent)" stroke-width="1" stroke-opacity="0.3"/>
+      <circle cx="290" cy="100" r="6" fill="none" stroke="var(--accent)" stroke-width="1" stroke-opacity="0.3"/>
+
+      <!-- Scanning line animation -->
+      <line x1="100" y1="100" x2="220" y2="100" stroke="var(--accent)" stroke-width="1" stroke-opacity="0.6">
+        <animate attributeName="y1" values="75;228;75" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="y2" values="75;228;75" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values="0.6;0;0.6" dur="3s" repeatCount="indefinite"/>
+      </line>
+
+      <!-- Status indicator -->
+      <circle cx="205" cy="85" r="6" fill="#00ff88"/>
+      <circle cx="205" cy="85" r="10" fill="none" stroke="#00ff88" stroke-width="1" stroke-opacity="0.4">
+        <animate attributeName="r" values="8;14;8" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+  </div>
+  <div class="hero-content">
+    <div class="hero-label">SENIOR SECURITY ENGINEER <span class="blink">_</span></div>
+    <h1>AKANKWASA<br><span class="line2">DERRICK</span></h1>
+    <div class="hero-role">
+      <span class="bracket">[</span> PAM SPECIALIST · WAF ENGINEER · DATABASE SECURITY <span class="bracket">]</span>
+    </div>
+    <p class="hero-bio">
+      Results-driven software and security engineer with deep expertise in CyberArk PAM, Imperva WAF, and Thales. Designing and implementing robust IT security solutions across banking, telecoms, and government sectors in East Africa and beyond.
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">↗ GET IN TOUCH</a>
+      <a href="#projects" class="btn-outline">VIEW OPERATIONS</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <span class="stat-number">15+</span>
+      <span class="stat-label">Banks Secured</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">5YRS</span>
+      <span class="stat-label">Field Experience</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">20+</span>
+      <span class="stat-label">Certifications</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header reveal">
+    <span class="section-tag">01 //</span>
+    <h2 class="section-title">CAPABILITY MATRIX</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- Threat Network Illustration -->
+  <div class="threat-map-wrap reveal">
+    <svg viewBox="0 0 900 180" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+      <defs>
+        <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- Connection lines -->
+      <g stroke="var(--accent)" stroke-width="0.8" stroke-opacity="0.2">
+        <line x1="100" y1="90" x2="250" y2="50"/>
+        <line x1="100" y1="90" x2="250" y2="130"/>
+        <line x1="250" y1="50" x2="450" y2="90"/>
+        <line x1="250" y1="130" x2="450" y2="90"/>
+        <line x1="450" y1="90" x2="650" y2="50"/>
+        <line x1="450" y1="90" x2="650" y2="130"/>
+        <line x1="650" y1="50" x2="800" y2="90"/>
+        <line x1="650" y1="130" x2="800" y2="90"/>
+        <line x1="250" y1="50" x2="650" y2="50" stroke-dasharray="3 5"/>
+        <line x1="250" y1="130" x2="650" y2="130" stroke-dasharray="3 5"/>
+      </g>
+      <!-- Animated data packets -->
+      <circle r="3" fill="var(--accent)" opacity="0.8">
+        <animateMotion dur="3s" repeatCount="indefinite" path="M100,90 L250,50 L450,90 L650,50 L800,90"/>
+      </circle>
+      <circle r="2.5" fill="var(--accent2)" opacity="0.7">
+        <animateMotion dur="4.5s" repeatCount="indefinite" path="M800,90 L650,130 L450,90 L250,130 L100,90"/>
+      </circle>
+      <circle r="2" fill="var(--accent3)" opacity="0.6">
+        <animateMotion dur="6s" repeatCount="indefinite" begin="1s" path="M100,90 L250,130 L450,90 L650,130 L800,90"/>
+      </circle>
+      <!-- Nodes -->
+      <!-- Node: Kampala HQ -->
+      <circle cx="100" cy="90" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+      <circle cx="100" cy="90" r="26" fill="url(#nodeGlow)"/>
+      <text x="100" y="94" text-anchor="middle" font-family="Share Tech Mono" font-size="8" fill="var(--accent)">KLA</text>
+      <text x="100" y="118" text-anchor="middle" font-family="Share Tech Mono" font-size="7" fill="var(--text-dim)">HQ</text>
+      <!-- Node: Bank A -->
+      <circle cx="250" cy="50" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="1" stroke-opacity="0.7"/>
+      <text x="250" y="54" text-anchor="middle" font-family="Share Tech Mono" font-size="7" fill="var(--accent)">BANK</text>
+      <text x="250" y="72" text-anchor="middle" font-family="Share Tech Mono" font-size="6.5" fill="var(--text-dim)">SECURED</text>
+      <!-- Node: Bank B -->
+      <circle cx="250" cy="130" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="1" stroke-opacity="0.7"/>
+      <text x="250" y="134" text-anchor="middle" font-family="Share Tech Mono" font-size="7" fill="var(--accent)">BANK</text>
+      <text x="250" y="152" text-anchor="middle" font-family="Share Tech Mono" font-size="6.5" fill="var(--text-dim)">SECURED</text>
+      <!-- Node: Central PAM -->
+      <circle cx="450" cy="90" r="22" fill="var(--surface)" stroke="var(--accent2)" stroke-width="2"/>
+      <circle cx="450" cy="90" r="30" fill="none" stroke="var(--accent2)" stroke-width="0.8" stroke-opacity="0.3" stroke-dasharray="4 4">
+        <animateTransform attributeName="transform" type="rotate" from="0 450 90" to="360 450 90" dur="10s" repeatCount="indefinite"/>
+      </circle>
+      <text x="450" y="87" text-anchor="middle" font-family="Share Tech Mono" font-size="7.5" fill="var(--accent2)">PAM</text>
+      <text x="450" y="98" text-anchor="middle" font-family="Share Tech Mono" font-size="6" fill="var(--accent2)">CORE</text>
+      <text x="450" y="120" text-anchor="middle" font-family="Share Tech Mono" font-size="6.5" fill="var(--text-dim)">CYBERARK</text>
+      <!-- Node: Telecom -->
+      <circle cx="650" cy="50" r="14" fill="var(--surface)" stroke="var(--accent3)" stroke-width="1" stroke-opacity="0.8"/>
+      <text x="650" y="54" text-anchor="middle" font-family="Share Tech Mono" font-size="7" fill="var(--accent3)">TELCO</text>
+      <text x="650" y="72" text-anchor="middle" font-family="Share Tech Mono" font-size="6.5" fill="var(--text-dim)">SECURED</text>
+      <!-- Node: Gov -->
+      <circle cx="650" cy="130" r="14" fill="var(--surface)" stroke="var(--accent3)" stroke-width="1" stroke-opacity="0.8"/>
+      <text x="650" y="134" text-anchor="middle" font-family="Share Tech Mono" font-size="7" fill="var(--accent3)">GOV</text>
+      <text x="650" y="152" text-anchor="middle" font-family="Share Tech Mono" font-size="6.5" fill="var(--text-dim)">SECURED</text>
+      <!-- Node: Cloud WAF -->
+      <circle cx="800" cy="90" r="18" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+      <text x="800" y="87" text-anchor="middle" font-family="Share Tech Mono" font-size="7" fill="var(--accent)">WAF</text>
+      <text x="800" y="98" text-anchor="middle" font-family="Share Tech Mono" font-size="6" fill="var(--accent)">IMPERVA</text>
+      <text x="800" y="118" text-anchor="middle" font-family="Share Tech Mono" font-size="6.5" fill="var(--text-dim)">CLOUD</text>
+      <!-- Status indicators -->
+      <circle cx="118" cy="75" r="3.5" fill="#00ff88"><animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/></circle>
+      <circle cx="468" cy="72" r="3.5" fill="var(--accent2)"><animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/></circle>
+      <circle cx="818" cy="75" r="3.5" fill="#00ff88"><animate attributeName="opacity" values="1;0.3;1" dur="2.5s" repeatCount="indefinite"/></circle>
+    </svg>
+  </div>
+
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <svg class="skill-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="20" width="32" height="22" rx="2" stroke="var(--accent)" stroke-width="1.8"/>
+        <path d="M16 20V14C16 9.58 19.58 6 24 6C28.42 6 32 9.58 32 14V20" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="24" cy="31" r="4" fill="var(--accent)" opacity="0.8"/>
+        <line x1="24" y1="35" x2="24" y2="39" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="skill-name">Privileged Access Management</div>
+      <p class="skill-desc">Design and delivery of enterprise PAM solutions for banks, telecoms, and central banks. Certified CyberArk Delivery Engineer with end-to-end implementation experience.</p>
+      <div class="skill-tags">
+        <span class="tag red">CyberArk PAM</span>
+        <span class="tag red">EPV</span>
+        <span class="tag red">PSM</span>
+        <span class="tag red">PVWA</span>
+      </div>
+    </div>
+
+    <div class="skill-card reveal">
+      <svg class="skill-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 4L6 12V24C6 33.94 14.06 43.28 24 46C33.94 43.28 42 33.94 42 24V12Z" stroke="var(--accent)" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M24 4L6 12V24C6 33.94 14.06 43.28 24 46C33.94 43.28 42 33.94 42 24V12Z" fill="var(--accent)" fill-opacity="0.07"/>
+        <polyline points="16,24 22,30 32,18" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="skill-name">Web Application Firewall</div>
+      <p class="skill-desc">Deployment and administration of Imperva WAF for banking and enterprise clients. Full lifecycle from requirements gathering to post-implementation support.</p>
+      <div class="skill-tags">
+        <span class="tag">Imperva WAF</span>
+        <span class="tag">Invicti</span>
+        <span class="tag">Acunetix</span>
+        <span class="tag purple">Web Security</span>
+      </div>
+    </div>
+
+    <div class="skill-card reveal">
+      <svg class="skill-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="24" cy="12" rx="16" ry="6" stroke="var(--accent)" stroke-width="1.8"/>
+        <path d="M8 12V24C8 27.31 15.16 30 24 30C32.84 30 40 27.31 40 24V12" stroke="var(--accent)" stroke-width="1.8"/>
+        <path d="M8 24V36C8 39.31 15.16 42 24 42C32.84 42 40 39.31 40 36V24" stroke="var(--accent)" stroke-width="1.8"/>
+        <circle cx="36" cy="38" r="6" fill="var(--surface)" stroke="var(--accent2)" stroke-width="1.5"/>
+        <line x1="34" y1="38" x2="38" y2="38" stroke="var(--accent2)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="36" y1="36" x2="36" y2="40" stroke="var(--accent2)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div class="skill-name">Database Security</div>
+      <p class="skill-desc">Imperva database security deployments across multiple commercial banks. Activity monitoring, compliance reporting, and data risk analytics for financial institutions.</p>
+      <div class="skill-tags">
+        <span class="tag red">Imperva DAM</span>
+        <span class="tag red">Thales</span>
+        <span class="tag red">Data Masking</span>
+        <span class="tag">Compliance</span>
+      </div>
+    </div>
+
+    <div class="skill-card reveal">
+      <svg class="skill-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="24" cy="24" r="18" stroke="var(--accent3)" stroke-width="1.8"/>
+        <ellipse cx="24" cy="24" rx="8" ry="18" stroke="var(--accent3)" stroke-width="1.2" stroke-opacity="0.5"/>
+        <line x1="6" y1="24" x2="42" y2="24" stroke="var(--accent3)" stroke-width="1.2" stroke-opacity="0.5"/>
+        <line x1="24" y1="6" x2="24" y2="42" stroke="var(--accent3)" stroke-width="1.2" stroke-opacity="0.5"/>
+        <circle cx="24" cy="24" r="3" fill="var(--accent3)"/>
+      </svg>
+      <div class="skill-name">Network & Endpoint Security</div>
+      <p class="skill-desc">Next-generation firewall deployment, web security gateway migrations, DLP solutions, and endpoint protection rollouts for banks and government organizations.</p>
+      <div class="skill-tags">
+        <span class="tag purple">NGFW</span>
+        <span class="tag purple">Bitdefender</span>
+        <span class="tag purple">Forcepoint</span>
+        <span class="tag">Cisco ISE</span>
+      </div>
+    </div>
+
+    <div class="skill-card reveal">
+      <svg class="skill-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="8" width="40" height="32" rx="2" stroke="var(--accent)" stroke-width="1.8"/>
+        <polyline points="8,32 14,22 20,28 26,16 32,24 38,14" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="38" cy="14" r="2.5" fill="var(--accent2)"/>
+        <line x1="4" y1="40" x2="44" y2="40" stroke="var(--accent)" stroke-width="1" stroke-opacity="0.3"/>
+      </svg>
+      <div class="skill-name">SIEM & Log Management</div>
+      <p class="skill-desc">ArcSight ESM administration and analysis for banks and insurance organizations. Security event monitoring, correlation rule development, and analyst workflows.</p>
+      <div class="skill-tags">
+        <span class="tag">ArcSight ESM</span>
+        <span class="tag">Splunk</span>
+        <span class="tag">Log Correlation</span>
+        <span class="tag purple">Tripwire FIM</span>
+      </div>
+    </div>
+
+    <div class="skill-card reveal">
+      <svg class="skill-svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="16" r="8" stroke="var(--accent)" stroke-width="1.8"/>
+        <path d="M6 42C6 35.37 11.37 30 18 30" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="34" cy="30" r="7" fill="var(--surface)" stroke="var(--accent2)" stroke-width="1.8"/>
+        <line x1="34" y1="26" x2="34" y2="34" stroke="var(--accent2)" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="30" y1="30" x2="38" y2="30" stroke="var(--accent2)" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M29 40C29 36.69 31.24 34 34 34C36.76 34 39 36.69 39 40" stroke="var(--accent2)" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div class="skill-name">Pre-Sales & Solution Engineering</div>
+      <p class="skill-desc">Technical pre-sales consultancy — translating client requirements into tailored security solutions. Market research, use-case development, and go-to-market strategy support.</p>
+      <div class="skill-tags">
+        <span class="tag">Requirements Analysis</span>
+        <span class="tag">Solution Design</span>
+        <span class="tag red">Pre-Sales</span>
+        <span class="tag">Automation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header reveal">
+    <span class="section-tag">02 //</span>
+    <h2 class="section-title">FIELD HISTORY</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-item reveal">
+      <div class="timeline-meta">
+        <span class="timeline-date">NOV 2019 — PRESENT</span>
+        <span class="timeline-company">ISOLUTIONS ASSOCIATES LIMITED</span>
+      </div>
+      <div class="timeline-role">Senior Security Engineer</div>
+      <p class="timeline-desc">Technical pre-sales and delivery engineer for enterprise security solutions across East Africa. Leading CyberArk PAM deployments at central banks, commercial banks, and telecoms. Delivered database security projects at Post Bank, Diamond Trust Bank, Centenary Bank, GT Bank, Pride Microfinance, Exim Bank, and DTB. Implemented ArcSight SIEM, Imperva WAF at Orient Bank, Tripwire File Integrity Management, and Endpoint Security solutions. Identify automation opportunities and build internal tooling for team efficiency.</p>
+    </div>
+
+    <div class="timeline-item reveal">
+      <div class="timeline-meta">
+        <span class="timeline-date">APR 2019 — NOV 2019</span>
+        <span class="timeline-company">DIMENSION DATA</span>
+      </div>
+      <div class="timeline-role">Networks & Security Engineer</div>
+      <p class="timeline-desc">Next-generation firewall implementation and post-deployment support for enterprise clients. Led successful bank-wide Data Security deployments encompassing Data Classification, Host DLP, and Network DLP. Rolled out complete Web Security Gateway solutions for banks and government organizations, migrating legacy proxy infrastructure. Configured Cisco ISE posture checks for URA including antivirus criteria and OS compliance requirements.</p>
+    </div>
+
+    <div class="timeline-item reveal">
+      <div class="timeline-meta">
+        <span class="timeline-date">JUL 2017 — AUG 2017</span>
+        <span class="timeline-company">MAKERERE UNIVERSITY — IT SUPPORT SERVICES</span>
+      </div>
+      <div class="timeline-role">IT Support Intern</div>
+      <p class="timeline-desc">Supported software installations and system administration tasks. Conducted system requirements gathering via interviews and observation. Implemented a web system using ASP.NET MVC framework, produced SDLC documentation, and participated in SharePoint training delivery.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header reveal">
+    <span class="section-tag">03 //</span>
+    <h2 class="section-title">OPERATIONS LOG</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="projects-grid">
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-type">PRIVILEGED ACCESS MANAGEMENT</div>
+          <div class="project-name">CYBERARK PAM — BANKS & TELECOMS</div>
+        </div>
+        <span class="project-status">ONGOING</span>
+      </div>
+      <div class="project-body">
+        <p class="project-desc">End-to-end CyberArk PAM deployments across central banks, commercial banks, and telecom operators. Serving as Technical Lead covering EPV, PSM, PVWA, and AIM component rollouts.</p>
+        <div class="skill-tags">
+          <span class="tag red">CyberArk</span>
+          <span class="tag red">PAM</span>
+          <span class="tag">Banking</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-type">WEB APPLICATION FIREWALL</div>
+          <div class="project-name">IMPERVA WAF — ORIENT BANK</div>
+        </div>
+        <span class="project-status">DELIVERED</span>
+      </div>
+      <div class="project-body">
+        <p class="project-desc">Full deployment and configuration of Imperva WAF at Orient Bank Uganda, protecting web-facing banking applications from OWASP Top 10 and advanced threats. Served as Technical Engineer.</p>
+        <div class="skill-tags">
+          <span class="tag purple">Imperva WAF</span>
+          <span class="tag">Web Security</span>
+          <span class="tag red">Banking</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-type">DATABASE SECURITY</div>
+          <div class="project-name">IMPERVA DAM — MULTI-BANK</div>
+        </div>
+        <span class="project-status">ACTIVE</span>
+      </div>
+      <div class="project-body">
+        <p class="project-desc">Database Activity Monitoring deployments at Post Bank (Technical Lead), Diamond Trust Bank, Centenary Bank, GT Bank, Pride Microfinance, Exim Bank, and DTB. Compliance-driven security coverage.</p>
+        <div class="skill-tags">
+          <span class="tag red">Imperva DAM</span>
+          <span class="tag">Compliance</span>
+          <span class="tag purple">Data Security</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-header">
+        <div>
+          <div class="project-type">SIEM DEPLOYMENT</div>
+          <div class="project-name">ARCSIGHT ESM — BANKS & INSURERS</div>
+        </div>
+        <span class="project-status">DELIVERED</span>
+      </div>
+      <div class="project-body">
+        <p class="project-desc">ArcSight Security Information and Event Management deployments across multiple banking and insurance organizations. Administrator and analyst-level configuration, correlation rules, and dashboards.</p>
+        <div class="skill-tags">
+          <span class="tag">ArcSight ESM</span>
+          <span class="tag purple">SIEM</span>
+          <span class="tag">Log Management</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="section-header reveal">
+    <span class="section-tag">04 //</span>
+    <h2 class="section-title">CLEARANCES & CERTS</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="certs-grid">
+    <div class="cert-card reveal">
+      <div class="cert-badge">🛡</div>
+      <div>
+        <div class="cert-name">CompTIA Security+</div>
+        <div class="cert-issuer">CompTIA (SY0-701)</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">🔐</div>
+      <div>
+        <div class="cert-name">CyberArk CDE</div>
+        <div class="cert-issuer">Certified Delivery Engineer</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">⚔</div>
+      <div>
+        <div class="cert-name">CyberArk CPE</div>
+        <div class="cert-issuer">Certified Pre-Sales Engineer</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">🗡</div>
+      <div>
+        <div class="cert-name">CyberArk Defender</div>
+        <div class="cert-issuer">CyberArk</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">🏹</div>
+      <div>
+        <div class="cert-name">CyberArk Sentry</div>
+        <div class="cert-issuer">CyberArk</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">🌐</div>
+      <div>
+        <div class="cert-name">Imperva Specialist</div>
+        <div class="cert-issuer">Data Security & WAF</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">🔍</div>
+      <div>
+        <div class="cert-name">Invicti Certified</div>
+        <div class="cert-issuer">Technical & Sales</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">📡</div>
+      <div>
+        <div class="cert-name">ArcSight ESM 7.5</div>
+        <div class="cert-issuer">Admin & Analyst (ILT)</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">🖥</div>
+      <div>
+        <div class="cert-name">Bitdefender CTS</div>
+        <div class="cert-issuer">Certified Technical Specialist</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">📊</div>
+      <div>
+        <div class="cert-name">Splunk Fundamentals</div>
+        <div class="cert-issuer">Splunk</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">✉</div>
+      <div>
+        <div class="cert-name">Forcepoint Email</div>
+        <div class="cert-issuer">Email Security Professional</div>
+      </div>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-badge">🔒</div>
+      <div>
+        <div class="cert-name">Cisco Cybersecurity</div>
+        <div class="cert-issuer">Cisco Essentials</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header reveal" style="justify-content:center; text-align:center;">
+    <span class="section-tag">05 //</span>
+    <h2 class="section-title">ESTABLISH COMMS</h2>
+  </div>
+
+  <div class="contact-wrapper reveal">
+
+    <!-- Location visual -->
+    <div style="margin-bottom:2rem; display:flex; justify-content:center;">
+      <div style="border:1px solid var(--border); background:var(--surface); padding:1.2rem 2rem; display:inline-flex; align-items:center; gap:1.2rem; transition:background 0.4s ease, border-color 0.4s ease;">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="20" r="8" stroke="var(--accent)" stroke-width="1.8"/>
+          <circle cx="24" cy="20" r="3" fill="var(--accent)"/>
+          <path d="M24 28C24 28 12 36 12 44H36C36 36 24 28 24 28Z" fill="var(--accent)" fill-opacity="0.15" stroke="var(--accent)" stroke-width="1.2" stroke-linejoin="round"/>
+          <circle cx="24" cy="20" r="14" stroke="var(--accent)" stroke-width="0.8" stroke-opacity="0.2" stroke-dasharray="3 4"/>
+        </svg>
+        <div>
+          <div style="font-family:'Orbitron',monospace;font-size:0.72rem;font-weight:700;color:var(--accent);letter-spacing:0.1em;">KAMPALA, UGANDA</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.15em;margin-top:0.2rem;">EAST AFRICA · UTC+3</div>
+        </div>
+        <div style="width:1px;height:36px;background:var(--border);margin:0 0.5rem;"></div>
+        <div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--text-dim);letter-spacing:0.15em;">REMOTE AVAILABLE</div>
+          <div style="display:flex;align-items:center;gap:0.4rem;margin-top:0.3rem;">
+            <span style="width:6px;height:6px;background:#00ff88;border-radius:50%;display:inline-block;animation: blink 1.4s ease infinite;"></span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:#00ff88;letter-spacing:0.1em;">OPEN TO WORK</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="contact-intro">
+      Available for enterprise security engagements, CyberArk PAM deployments, Imperva WAF & database security projects, and senior security engineering roles across East Africa and beyond.
+    </p>
+
+    <a href="mailto:derrickakankwasa7@gmail.com" class="contact-email">derrickakankwasa7@gmail.com</a>
+
+    <div class="contact-links">
+      <a href="tel:+256782040842" class="contact-link">📞 +256 782 040 842</a>
+      <a href="#" class="contact-link">◈ LinkedIn</a>
+      <a href="#" class="contact-link">◉ Kampala, Uganda</a>
+    </div>
+
+    <a href="#" class="btn-primary" style="font-size:0.75rem; padding:1rem 2.5rem;">↓ DOWNLOAD RÉSUMÉ</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-copy">© 2025 AKANKWASA DERRICK — ALL RIGHTS RESERVED</div>
+  <div class="footer-note">BUILT SECURE. STAY <span>PARANOID</span>.</div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Theme toggle
+  const themeToggle = document.getElementById('themeToggle');
+  const toggleLabel = document.getElementById('toggleLabel');
+  const toggleIcon = themeToggle.querySelector('.toggle-icon');
+
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    toggleLabel.textContent = isLight ? 'LIGHT' : 'DARK';
+    toggleIcon.textContent = isLight ? '☀️' : '🌙';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  });
+
+  // Restore saved theme
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light-mode');
+    toggleLabel.textContent = 'LIGHT';
+    toggleIcon.textContent = '☀️';
+  }
+
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%, -50%) scale(1.8)';
+      ring.style.width = '50px'; ring.style.height = '50px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+      ring.style.width = '36px'; ring.style.height = '36px';
+    });
+  });
+
+  // Matrix rain
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホ01アBCDEF0123456789XZQWERTY';
+  const fontSize = 13;
+  const cols = Math.floor(canvas.width / fontSize);
+  const drops = Array(cols).fill(1);
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(2,4,8,0.04)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00ffe0';
+    ctx.font = fontSize + 'px Share Tech Mono';
+    for (let i = 0; i < drops.length; i++) {
+      const text = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+  }
+  setInterval(drawMatrix, 60);
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        const siblings = Array.from(entry.target.parentElement.querySelectorAll('.reveal'));
+        const idx = sibli
